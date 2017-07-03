@@ -1,0 +1,20 @@
+{% extends 'measurer/base.html' %}
+{% load static %}
+
+{% block main_content %}
+
+<h4 style="margin: 20px 0;"><span class="badge badge-default custom-badge">1</span>選擇形狀</h4>
+<div class="row" style="margin-left: -.95px;">
+{% for shape in shapes %}
+<a href="{{ shape.shape_name }}">
+	<div class="card" style="width: 10rem; margin: 3px;">
+	  <img class="card-img-top" src="{% static 'measurer/img/tube.jpg' %}" alt="Card image cap" style="width: 100%;">
+	  <div class="card-block">
+	    <h6 class="card-title">{{ shape.shape_realname }}</h6>
+	    <!-- <a href="#" class="btn btn-primary">Go</a> -->
+	  </div>
+	</div>
+</a>
+{% endfor %}
+</div>
+{% endblock %}

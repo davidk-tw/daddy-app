@@ -1,0 +1,55 @@
+{% extends 'measurer/base.html' %}
+
+{% block main_content %}
+<h4 style="margin: 20px 0;"><span class="badge badge-default custom-badge">2</span>輸入 {{shape.shape_realname}} 規格</h4>
+
+<form method="POST" action="{% url 'measure' shape.shape_name %}">
+	{% csrf_token %}
+	<div class="form-group">
+		<label for="select-material" class="col-form-label">選擇材料</label>
+		<select class="form-control" id="select-material" name="select-material" style="height: 50px;">
+			{% for material in materials %}
+			<option value="{{ material.id }}">{{ material.material_name }} ({{ material.material_density }} g/cm3)</option>
+			{% endfor %}
+		</select>
+	</div>
+
+	{% for scale, scale_info in scale_form.items %}
+		{% if shape.shape_name in scale_info.list %}
+		<div class="form-group">
+			<label for="{{ scale }}" class="col-form-label">{{ scale_info.realname }}</label>
+			<div class="row">
+				<div class="col-5 col-md-7" style="padding-right: 0;">
+					<input class="form-control" type="number" id="{{ scale }}" name="{{ scale }}" placeholder="輸入{{ scale_info.realname }}" step="0.000001">
+				</div>
+				<div class="col-7 col-md-3">
+					<div class="btn-group" data-toggle="buttons">
+						<label class="btn btn-primary active">
+							<input type="radio" name="{{ scale }}-unit" id="{{ scale }}-cm" autocomplete="off" value="cm" checked> cm
+						</label>
+						<label class="btn btn-primary">
+							<input type="radio" name="{{ scale }}-unit" id="{{ scale }}-mm" autocomplete="off" value="mm"> mm
+						</label>
+						<label class="btn btn-primary">
+							<input type="radio" name="{{ scale }}-unit" id="{{ scale }}-m" autocomplete="off" value="m"> m
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+	{% endfor %}
+
+	<div class="form-group">
+		<label for="amount" class="col-form-label">數量</label>
+		<div class="row">
+			<div class="col-5 col-md-3" style="padding-right: 0;">
+				<input name="amount" class="form-control" type="number" id="amount" placeholder="輸入數量">
+			</div>
+		</div>
+	</div>
+
+	<button type="submit" class="btn btn-success btn-lg btn-block" style="margin-top: 20px;">計算結果！</button>
+</form>
+{% endblock %}
+
