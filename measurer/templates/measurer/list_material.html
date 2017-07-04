@@ -7,7 +7,7 @@
 	<thead>
 		<tr>
 			<th>#</th>
-			<th>金屬名稱</th>
+			<th style="text-align: right;">金屬名稱</th>
 			<th>密度 (g/cm3)</th>
 		</tr>
 	</thead>
@@ -15,7 +15,7 @@
 		{% for material in materials %}
 		<tr>
 			<th scope="row">{{ material.id }}</th>
-			<td>{{ material.material_name }}</td>
+			<td style="text-align: right;">{{ material.material_name }}</td>
 			<td>{{ material.material_density }}</td>
 		</tr>
 		{% endfor %}
