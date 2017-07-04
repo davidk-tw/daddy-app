@@ -3,8 +3,6 @@
 {% block main_content %}
 <h4 style="margin: 20px 0;"><span class="badge badge-default custom-badge">2</span>輸入 {{shape.shape_realname}} 規格</h4>
 
-<div class="alert alert-danger collapse" role="alert" id="error_message"></div>
-
 <form name="spec" method="POST" action="{% url 'measure' shape.shape_name %}" onsubmit="return validate('{{ shape.shape_name }}')">
 	{% csrf_token %}
 	<div class="form-group">
@@ -46,10 +44,12 @@
 		<label for="amount" class="col-form-label">數量</label>
 		<div class="row">
 			<div class="col-5 col-md-3" style="padding-right: 0;">
-				<input name="amount" class="form-control" type="number" id="amount" placeholder="輸入數量" min="1">
+				<input name="amount" class="form-control" type="number" id="amount" placeholder="輸入數量" min="1" required>
 			</div>
 		</div>
 	</div>
+
+	<div class="alert alert-danger collapse" role="alert" id="error-dialog"></div>
 
 	<button type="submit" class="btn btn-success btn-lg btn-block" style="margin-top: 20px;" >計算結果！</button>
 </form>
@@ -57,30 +57,34 @@
 <script>
 	function validate(shape) {
 		var form = document.forms['spec'];
-		var pass = true;
-		var message = "";
 
 		switch (shape) {
 			case 'tube':
-				if (form['outer_radius'].value <= form['thickness'].value) {
-					message = "外圍半徑不得小於金屬壁之厚度！";
-					pass = false;
+				if (unitconvert(form['outer_radius'].value, form['outer_radius-unit'].value) <= unitconvert(form['thickness'].value, form['thickness-unit'].value)) {
+					showalert("外圍半徑須大於金屬壁厚度！");
+					return false;
 				}
 				break;
 			case 'angle':
-				if (form['side_length_1'].value + form['side_length_2'].value <= form['thickness'].value) {
-					message = "雙邊之寬度不得小於金屬壁之厚度！";
-					pass = false;
+				
+				if ((unitconvert(form['side_length_1'].value, form['side_length_1-unit'].value) + unitconvert(form['side_length_2'].value, form['side_length_2-unit'].value)) <= unitconvert(form['thickness'].value, form['thickness-unit'].value)) {
+					showalert("雙邊邊長相加須大於金屬壁厚度！");
+					return false;
 				}
 				break;
 		}
 
-		if (!pass) {
-			$('#error_message').append(message);
-			$('#error_message').show();
-		}
+		return true;
+	}
 
-		return pass;
+	function unitconvert(value, unit) {
+		if (unit == 'cm') return value;
+		else return (unit == 'm') ? value*100 : value*.1;
+	}
+
+	function showalert(message) {
+		$('#error-dialog').text(message);
+		$('#error-dialog').show();
 	}
 </script>
 {% endblock %}
