@@ -66,7 +66,6 @@
 				}
 				break;
 			case 'angle':
-				
 				if ((unitconvert(form['side_length_1'].value, form['side_length_1-unit'].value) + unitconvert(form['side_length_2'].value, form['side_length_2-unit'].value)) <= unitconvert(form['thickness'].value, form['thickness-unit'].value)) {
 					showalert("雙邊邊長相加須大於金屬壁厚度！");
 					return false;
@@ -78,8 +77,8 @@
 	}
 
 	function unitconvert(value, unit) {
-		if (unit == 'cm') return value;
-		else return (unit == 'm') ? value*100 : value*.1;
+		if (unit == 'cm') return parseFloat(value);
+		else return (unit == 'm') ? parseFloat(value)*100 : parseFloat(value)*.1;
 	}
 
 	function showalert(message) {
