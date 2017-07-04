@@ -1,1 +1,1 @@
-	web: gunicorn daddy_app.wsgi --log-file -
+web: gunicorn daddy_app.wsgi --log-file -
