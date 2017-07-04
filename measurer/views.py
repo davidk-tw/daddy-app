@@ -72,22 +72,43 @@ def measure(request, shape):
 	material = get_object_or_404(Material, pk=request.POST['select-material'])
 	amount = int(request.POST['amount'])
 	weight = 0.0
+	spec = {}
 
 	if shape.shape_name == 'tube':
 		outer_radius = convert(request.POST['outer_radius-unit'], float(request.POST['outer_radius']))
 		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
 		length = convert(request.POST['length-unit'], float(request.POST['length']))
+
+		spec = {
+			'外徑': outer_radius,
+			'壁厚': thickness,
+			'長度': length
+		}
+
 		weight = material.material_density * .001 * (outer_radius - thickness) * thickness * math.pi
 
 	elif shape.shape_name == 'round_bar':
 		radius = convert(request.POST['radius-unit'], float(request.POST['radius']))
 		length = convert(request.POST['length-unit'], float(request.POST['length']))
+
+		spec = {
+			'半徑': radius,
+			'長度': length
+		}
+
 		weight = material.material_density * .001 * pow(radius, 2) * length * math.pi
 
 	elif shape.shape_name == 'plate':
 		length = convert(request.POST['length-unit'], float(request.POST['length']))
 		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
 		width = convert(request.POST['width-unit'], float(request.POST['width']))
+
+		spec = {
+			'長度': length,
+			'厚度': thickness,
+			'寬度': width
+		}
+
 		weight = material.material_density * .001 * length * width * thickness
 
 	elif shape.shape_name == 'rectangular_tube':
@@ -95,18 +116,39 @@ def measure(request, shape):
 		width = convert(request.POST['width-unit'], float(request.POST['width']))
 		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
 		height = convert(request.POST['height-unit'], float(request.POST['height']))
+		
+		spec = {
+			'長度': length,
+			'寬度': width,
+			'高度': height,
+			'壁厚': thickness,
+		}
+
 		weight = material.material_density * .001 * (length + width) * 2 * height
 
 	elif shape.shape_name == 'cuboid':
 		length = convert(request.POST['length-unit'], float(request.POST['length']))
 		width = convert(request.POST['width-unit'], float(request.POST['width']))
 		height = convert(request.POST['height-unit'], float(request.POST['height']))
+		
+		spec = {
+			'長度': length,
+			'寬度': width,
+			'高度': height,
+		}
+
 		weight = material.material_density * .001 * length * width * height
 
 	elif shape.shape_name == 'hexagonal' or shape.shape_name == 'octagonal':
 		constant = .866 if shape.shape_name == 'hexagonal' else .828
 		diagonal = convert(request.POST['diagonal-unit'], float(request.POST['diagonal']))
 		length = convert(request.POST['length-unit'], float(request.POST['length']))
+		
+		spec = {
+			'長度': length,
+			'對角線長度': diagonal
+		}
+
 		weight = material.material_density * .001 * pow(diagonal, 2) * length * constant
 
 	elif shape.shape_name == 'angle':
@@ -114,6 +156,14 @@ def measure(request, shape):
 		side_length_2 = convert(request.POST['side_length_2-unit'], float(request.POST['side_length_2']))
 		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
 		length = convert(request.POST['length-unit'], float(request.POST['length']))
+		
+		spec = {
+			'邊長-1': side_length_1,
+			'邊長-2': side_length_2,
+			'厚度': thickness,
+			'長度': length,
+		}
+
 		weight = material.material_density * .001 * (side_length_1 + side_length_2 - thickness) * thickness * length
 
 	return render(request, 'measurer/result.html', {
@@ -124,6 +174,7 @@ def measure(request, shape):
 		'amount': amount,
 		'total_weight_kg': weight * amount,
 		'total_weight_g': weight * amount * 1000,
+		'spec': spec
 	})
 
 def convert(unit, value):
