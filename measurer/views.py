@@ -29,7 +29,7 @@ def scale(request, shape):
 		},
 		'thickness': {
 			'realname': '厚度',
-			'list': ['tube', 'rectangular_tube', 'plate', 'angle', 'channel', 'beam', 'storage_tank_square']
+			'list': ['tube', 'rectangular_tube', 'plate', 'angle', 'storage_tank_square']
 		},
 		'width': {
 			'realname': '寬度',
@@ -37,11 +37,11 @@ def scale(request, shape):
 		},
 		'length': {
 			'realname': '長度',
-			'list': ['tube', 'round_bar', 'plate', 'rectangular_tube', 'cuboid', 'hexagonal', 'octagonal', 'angle', 'storage_tank_square']
+			'list': ['tube', 'round_bar', 'plate', 'rectangular_tube', 'cuboid', 'hexagonal', 'octagonal', 'angle', 'channel', 'beam', 'storage_tank_square']
 		},
 		'height': {
 			'realname': '高度',
-			'list': ['rectangular_tube', 'cuboid', 'storage_tank_square']
+			'list': ['rectangular_tube', 'cuboid', 'storage_tank_square', 'channel', 'beam']
 		},
 		'radius': {
 			'realname': '半徑',
@@ -59,6 +59,26 @@ def scale(request, shape):
 			'realname': '邊長',
 			'list': ['angle']
 		},
+		'bone_width': {
+			'realname': '腰厚',
+			'list': ['channel', 'beam']
+		},
+		'branch_length': {
+			'realname': '腿長',
+			'list': ['channel', 'beam']
+		},
+		'branch_width': {
+			'realname': '平均腿厚',
+			'list': ['channel', 'beam']
+		},
+		'innerarc_radius': {
+			'realname': '內弧半徑',
+			'list': ['channel', 'beam']
+		},
+		'edgearc_radius': {
+			'realname': '端弧半徑',
+			'list': ['channel', 'beam']
+		}
 	}
 
 	return render(request, 'measurer/scale.html', {
@@ -75,9 +95,9 @@ def measure(request, shape):
 	spec = {}
 
 	if shape.shape_name == 'tube':
-		outer_radius = convert(request.POST['outer_radius-unit'], float(request.POST['outer_radius']))
-		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
+		outer_radius = unitconv(request.POST['outer_radius-unit'], float(request.POST['outer_radius']))
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
 
 		spec = {
 			'外徑': outer_radius,
@@ -88,8 +108,8 @@ def measure(request, shape):
 		weight = material.material_density * .001 * (outer_radius - thickness) * thickness * math.pi
 
 	elif shape.shape_name == 'round_bar':
-		radius = convert(request.POST['radius-unit'], float(request.POST['radius']))
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
+		radius = unitconv(request.POST['radius-unit'], float(request.POST['radius']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
 
 		spec = {
 			'半徑': radius,
@@ -99,9 +119,9 @@ def measure(request, shape):
 		weight = material.material_density * .001 * pow(radius, 2) * length * math.pi
 
 	elif shape.shape_name == 'plate':
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
-		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
-		width = convert(request.POST['width-unit'], float(request.POST['width']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		width = unitconv(request.POST['width-unit'], float(request.POST['width']))
 
 		spec = {
 			'長度': length,
@@ -112,10 +132,10 @@ def measure(request, shape):
 		weight = material.material_density * .001 * length * width * thickness
 
 	elif shape.shape_name == 'rectangular_tube':
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
-		width = convert(request.POST['width-unit'], float(request.POST['width']))
-		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
-		height = convert(request.POST['height-unit'], float(request.POST['height']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
+		width = unitconv(request.POST['width-unit'], float(request.POST['width']))
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		height = unitconv(request.POST['height-unit'], float(request.POST['height']))
 		
 		spec = {
 			'長度': length,
@@ -127,9 +147,9 @@ def measure(request, shape):
 		weight = material.material_density * .001 * (length + width) * 2 * height
 
 	elif shape.shape_name == 'cuboid':
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
-		width = convert(request.POST['width-unit'], float(request.POST['width']))
-		height = convert(request.POST['height-unit'], float(request.POST['height']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
+		width = unitconv(request.POST['width-unit'], float(request.POST['width']))
+		height = unitconv(request.POST['height-unit'], float(request.POST['height']))
 		
 		spec = {
 			'長度': length,
@@ -140,22 +160,22 @@ def measure(request, shape):
 		weight = material.material_density * .001 * length * width * height
 
 	elif shape.shape_name == 'hexagonal' or shape.shape_name == 'octagonal':
-		constant = .866 if shape.shape_name == 'hexagonal' else .828
-		diagonal = convert(request.POST['diagonal-unit'], float(request.POST['diagonal']))
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
+		const = .866 if shape.shape_name == 'hexagonal' else .828
+		diagonal = unitconv(request.POST['diagonal-unit'], float(request.POST['diagonal']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
 		
 		spec = {
 			'長度': length,
 			'對角線長度': diagonal
 		}
 
-		weight = material.material_density * .001 * pow(diagonal, 2) * length * constant
+		weight = material.material_density * .001 * pow(diagonal, 2) * length * const
 
 	elif shape.shape_name == 'angle':
-		side_length_1 = convert(request.POST['side_length_1-unit'], float(request.POST['side_length_1']))
-		side_length_2 = convert(request.POST['side_length_2-unit'], float(request.POST['side_length_2']))
-		thickness = convert(request.POST['thickness-unit'], float(request.POST['thickness']))
-		length = convert(request.POST['length-unit'], float(request.POST['length']))
+		side_length_1 = unitconv(request.POST['side_length_1-unit'], float(request.POST['side_length_1']))
+		side_length_2 = unitconv(request.POST['side_length_2-unit'], float(request.POST['side_length_2']))
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
 		
 		spec = {
 			'邊長-1': side_length_1,
@@ -165,6 +185,28 @@ def measure(request, shape):
 		}
 
 		weight = material.material_density * .001 * (side_length_1 + side_length_2 - thickness) * thickness * length
+
+	elif shape.shape_name == 'channel' or shape.shape_name == 'beam':
+		const = .349 if shape.shape_name == 'channel' else .615
+		height = unitconv(request.POST['height-unit'], float(request.POST['height']))
+		bone_width = unitconv(request.POST['bone_width-unit'], float(request.POST['bone_width']))
+		branch_width = unitconv(request.POST['branch_width-unit'], float(request.POST['branch_width']))
+		branch_length = unitconv(request.POST['branch_length-unit'], float(request.POST['branch_length']))
+		innerarc_radius = unitconv(request.POST['innerarc_radius-unit'], float(request.POST['innerarc_radius']))
+		edgearc_radius = unitconv(request.POST['edgearc_radius-unit'], float(request.POST['edgearc_radius']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
+		
+		spec = {
+			'高': height,
+			'腰厚': bone_width,
+			'平均腿厚': branch_width,
+			'腿長': branch_length,
+			'內弧半徑': innerarc_radius,
+			'端弧半徑': edgearc_radius,
+			'長': length,
+		}
+
+		weight = material.material_density * .001 * (height*bone_width + 2*branch_width*(branch_length-bone_width) + const*(pow(innerarc_radius, 2)-pow(edgearc_radius, 2))) * length
 
 	return render(request, 'measurer/result.html', {
 		'shape': shape,
@@ -177,7 +219,7 @@ def measure(request, shape):
 		'spec': spec
 	})
 
-def convert(unit, value):
+def unitconv(unit, value):
 	if unit == 'cm':
 		return value
 	else:
