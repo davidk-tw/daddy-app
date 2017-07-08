@@ -35,6 +35,17 @@ a, a:hover, a:active, a:visited, a:focus {
 	margin-bottom: 40px;
 }
 
+.custom-card {
+	width: 9.8rem; 
+	margin: 5px; 
+	padding: 6px;
+	border: 0;
+}
+
+.custom-card:hover {
+	border: 1px solid rgba(0,0,0,.2);
+}
+
 .custom-badge {
 	border-radius: 5rem; 
 	width: 27px; 

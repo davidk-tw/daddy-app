@@ -197,16 +197,31 @@ def measure(request, shape):
 		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
 		
 		spec = {
-			'高': height,
+			'高度': height,
 			'腰厚': bone_width,
 			'平均腿厚': branch_width,
 			'腿長': branch_length,
 			'內弧半徑': innerarc_radius,
 			'端弧半徑': edgearc_radius,
-			'長': length,
+			'長度': length,
 		}
 
 		weight = material.material_density * .001 * (height*bone_width + 2*branch_width*(branch_length-bone_width) + const*(pow(innerarc_radius, 2)-pow(edgearc_radius, 2))) * length
+
+	elif shape.shape_name == 'storage_tank_square':
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
+		height = unitconv(request.POST['height-unit'], float(request.POST['height']))
+		width = unitconv(request.POST['width-unit'], float(request.POST['width']))
+		
+		spec = {
+			'長度': length,
+			'寬度': width,
+			'高度': height,
+			'厚度': thickness
+		}
+
+		weight = (length * width * height - ((length - thickness*2) * (width - thickness*2)*(height-thickness)) * material.material_density) * .001
 
 	return render(request, 'measurer/result.html', {
 		'shape': shape,
