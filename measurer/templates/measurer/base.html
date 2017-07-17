@@ -35,7 +35,7 @@
 						<a class="nav-item nav-link" href="{% url 'index' %}">計算重量</a>
 						<a class="nav-item nav-link" href="" data-toggle="modal" data-target="#add-material-dialog">新增材料</a>
 						<a class="nav-item nav-link" href="{% url 'display_material' %}">材料列表</a>
-						<a class="nav-item nav-link" href="{% url 'admin:index' %}" target="_blank">後台管理</a>
+						<a id="backstage" class="nav-item nav-link" href="{% url 'admin:index' %}" target="_blank">後台管理</a>
 					</div>
 				</div>
 			</div>
@@ -89,6 +89,12 @@
 
 		<script src="{% static 'measurer/js/jquery-3.2.1.min.js' %}"></script>
 		<script src="{% static 'measurer/js/tether.min.js' %}"></script>
-        <script src="{% static 'measurer/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'measurer/js/bootstrap.min.js' %}"></script>
+		
+		<script>
+			if (/Mobi/.test(navigator.userAgent)) {
+				$("#backstage").hide();
+			}
+		</script>
 	</body>
 </html>
