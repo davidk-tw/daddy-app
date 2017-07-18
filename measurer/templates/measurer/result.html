@@ -1,5 +1,5 @@
 {% extends 'measurer/base.html' %}
-
+{% load humanize %}
 {% block main_content %}
 <h4 style="margin: 20px 0;"><span class="badge badge-default custom-badge">3</span>計算結果</h4>
 
@@ -8,7 +8,7 @@
 <div class="row" style="margin-top: 20px;">
 	<div class="col-md-4 col-1"></div>
 	<div class="col">
-		<ul class="list-group">
+		<ul class="list-group" style="font-size: 1.3rem;">
 			{% for s, v in spec.items %}
 			<li class="list-group-item justify-content-between">
 				{{ s }}
@@ -22,13 +22,13 @@
 
 
 <div class="row" style="margin: 30px 0 30px 0; text-align: center;" >
-	<div class="col">
+	<div class="col" style="margin-top: 20px;">
 		<h3>單件重</h3>
-		<h4 class="display-4">{{ weight_per_one_kg | floatformat:2 }} <small>kg</small></h4>
+		<h4 class="display-4">{{ weight_per_one_kg | floatformat:2 | intcomma }} <small>kg</small></h4>
 	</div>
-	<div class="col">
+	<div class="col" style="margin-top: 20px;">
 		<h3>總重 ({{ amount }}件)</h3>
-		<h4 class="display-4">{{ total_weight_kg | floatformat:2 }} <small>kg</small></h4>
+		<h4 class="display-4">{{ total_weight_kg | floatformat:2 | intcomma }} <small>kg</small></h4>
 	</div>
 </div>
 

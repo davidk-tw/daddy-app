@@ -27,8 +27,16 @@ a, a:hover, a:active, a:visited, a:focus {
     text-decoration:none;
 }
 
+input[type='number'] { 
+	font-size: 1.5rem; 
+}
+
+input[type='text'] { 
+	font-size: 1.5rem; 
+}
+
 .card-block {
-	padding: 1rem 1rem .2rem 1rem;
+	padding: 1.5rem .5rem 0 .5rem;
 }
 
 .display-3 {
@@ -36,9 +44,9 @@ a, a:hover, a:active, a:visited, a:focus {
 }
 
 .custom-card {
-	width: 8.5rem; 
-	margin: 5px; 
-	padding: 6px;
+	width: 9rem; 
+	margin: 3px; 
+	padding: 10px;
 	border: 0;
 }
 
@@ -50,6 +58,10 @@ a, a:hover, a:active, a:visited, a:focus {
 	border-radius: 5rem; 
 	width: 27px; 
 	margin-right: 12px;
+}
+
+.custom-form-label {
+	font-size: 1.5rem;
 }
 
 #add-material-button {

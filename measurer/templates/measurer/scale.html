@@ -6,7 +6,7 @@
 <form name="spec" method="POST" action="{% url 'measure' shape.shape_name %}" onsubmit="return validate('{{ shape.shape_name }}')">
 	{% csrf_token %}
 	<div class="form-group">
-		<label for="select-material" class="col-form-label">選擇材料</label>
+		<label for="select-material" class="col-form-label custom-form-label">選擇材料</label>
 		<select class="form-control" id="select-material" name="select-material" style="height: 50px;">
 			{% for material in materials %}
 			<option value="{{ material.id }}">{{ material.material_name }} ({{ material.material_density }} g/cm3)</option>
@@ -17,13 +17,13 @@
 	{% for scale, scale_info in scale_form.items %}
 		{% if shape.shape_name in scale_info.list %}
 		<div class="form-group">
-			<label for="{{ scale }}" class="col-form-label">{{ scale_info.realname }}</label>
+			<label for="{{ scale }}" class="col-form-label custom-form-label">{{ scale_info.realname }}</label>
 			<div class="row">
-				<div class="col-5 col-md-7" style="padding-right: 0;">
+				<div class="col-6 col-md-7" style="">
 					<input class="form-control" type="number" id="{{ scale }}" name="{{ scale }}" placeholder="輸入{{ scale_info.realname }}" step="0.000001" min="0.0001" required>
 				</div>
-				<div class="col-7 col-md-3">
-					<div class="btn-group" data-toggle="buttons">
+				<div class="col-6 col-md-3" style="padding-left: 0px; padding-right: 0px;">
+					<div class="btn-group" data-toggle="buttons" style="padding-top: 5.5px;">
 						<label class="btn btn-primary active">
 							<input type="radio" name="{{ scale }}-unit" id="{{ scale }}-cm" autocomplete="off" value="cm" checked> cm
 						</label>
@@ -41,7 +41,7 @@
 	{% endfor %}
 
 	<div class="form-group">
-		<label for="amount" class="col-form-label">數量</label>
+		<label for="amount" class="col-form-label custom-form-label">數量</label>
 		<div class="row">
 			<div class="col-5 col-md-3" style="padding-right: 0;">
 				<input name="amount" class="form-control" type="number" id="amount" placeholder="輸入數量" min="1" required>
@@ -60,8 +60,10 @@
 
 		switch (shape) {
 			case 'tube':
+			case 'storage_tank_one':
+			case 'storage_tank_both':
 				if (unitconvert(form['outer_radius'].value, form['outer_radius-unit'].value) <= unitconvert(form['thickness'].value, form['thickness-unit'].value)) {
-					showalert("外圍半徑須大於金屬壁厚度！");
+					showalert("外圍直徑須大於金屬壁厚度！");
 					return false;
 				}
 				break;
