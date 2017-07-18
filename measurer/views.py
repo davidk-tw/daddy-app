@@ -24,7 +24,7 @@ def scale(request, shape):
 
 	need_to_scale = {
 		'outer_radius': {
-			'realname': '外徑',
+			'realname': '直徑',
 			'list': ['tube']
 		},
 		'thickness': {
@@ -104,12 +104,12 @@ def measure(request, shape):
 		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
 
 		spec = {
-			'外徑': outer_radius,
-			'壁厚': thickness,
+			'直徑': outer_radius,
+			'厚度': thickness,
 			'長度': length
 		}
 
-		weight = material.material_density * .001 * (outer_radius - thickness) * thickness * math.pi
+		weight = material.material_density * .001 * (outer_radius - thickness) * thickness * math.pi * length
 
 	elif shape.shape_name == 'round_bar':
 		radius = unitconv(request.POST['radius-unit'], float(request.POST['radius']))
@@ -145,7 +145,7 @@ def measure(request, shape):
 			'長度': length,
 			'寬度': width,
 			'高度': height,
-			'壁厚': thickness,
+			'厚度': thickness,
 		}
 
 		weight = material.material_density * .001 * (length + width) * 2 * height
