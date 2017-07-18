@@ -148,7 +148,7 @@ def measure(request, shape):
 			'厚度': thickness,
 		}
 
-		weight = material.material_density * .001 * (length + width) * 2 * height
+		weight = material.material_density * .001 * (length + width) * 2 * thickness * height
 
 	elif shape.shape_name == 'cuboid':
 		length = unitconv(request.POST['length-unit'], float(request.POST['length']))
@@ -225,7 +225,7 @@ def measure(request, shape):
 			'厚度': thickness
 		}
 
-		weight = (length * width * height - ((length - thickness*2) * (width - thickness*2)*(height-thickness)) * material.material_density) * .001
+		weight = (length * width * height - ((length - thickness*2) * (width - thickness*2)*(height-thickness))) * material.material_density * .001
 
 	elif shape.shape_name == 'storage_tank_one' or shape.shape_name == 'storage_tank_both':
 		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
