@@ -29,7 +29,7 @@ def scale(request, shape):
 		},
 		'thickness': {
 			'realname': '厚度',
-			'list': ['tube', 'rectangular_tube', 'plate', 'angle', 'storage_tank_square']
+			'list': ['tube', 'rectangular_tube', 'plate', 'angle', 'storage_tank_square', 'storage_tank_one', 'storage_tank_both']
 		},
 		'width': {
 			'realname': '寬度',
@@ -41,11 +41,15 @@ def scale(request, shape):
 		},
 		'height': {
 			'realname': '高度',
-			'list': ['rectangular_tube', 'cuboid', 'storage_tank_square', 'channel', 'beam']
+			'list': ['rectangular_tube', 'cuboid', 'storage_tank_square', 'channel', 'beam', 'storage_tank_one', 'storage_tank_both']
 		},
 		'radius': {
 			'realname': '半徑',
 			'list': ['round_bar', ]
+		},
+		'diameter': {
+			'realname': '直徑',
+			'list': ['storage_tank_one', 'storage_tank_both']
 		},
 		'diagonal': {
 			'realname': '對角線長度',
@@ -223,6 +227,20 @@ def measure(request, shape):
 
 		weight = (length * width * height - ((length - thickness*2) * (width - thickness*2)*(height-thickness)) * material.material_density) * .001
 
+	elif shape.shape_name == 'storage_tank_one' or shape.shape_name == 'storage_tank_both':
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		height = unitconv(request.POST['height-unit'], float(request.POST['height']))
+		diameter = unitconv(request.POST['diameter-unit'], float(request.POST['diameter']))
+		radius = diameter / 2.0
+
+		spec = {
+			'高度': height,
+			'厚度': thickness,
+			'直徑': diameter
+		}
+		bottom = 1 if shape.shape_name == 'storage_tank_one' else 2
+		weight = ((diameter - thickness)*thickness*height*math.pi + math.pi*pow(radius, 2)*thickness*2) * .001 * material.material_density
+
 	return render(request, 'measurer/result.html', {
 		'shape': shape,
 		'material': material,
@@ -233,6 +251,7 @@ def measure(request, shape):
 		'total_weight_g': weight * amount * 1000,
 		'spec': spec
 	})
+
 
 def unitconv(unit, value):
 	if unit == 'cm':
