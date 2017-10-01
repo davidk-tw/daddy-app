@@ -29,7 +29,7 @@ def scale(request, shape):
 		},
 		'thickness': {
 			'realname': '厚度',
-			'list': ['tube', 'rectangular_tube', 'plate', 'angle', 'storage_tank_square', 'storage_tank_one', 'storage_tank_both']
+			'list': ['tube', 'rectangular_tube', 'plate', 'angle', 'storage_tank_square', 'storage_tank_one', 'storage_tank_both', 'sphere']
 		},
 		'width': {
 			'realname': '寬度',
@@ -45,11 +45,11 @@ def scale(request, shape):
 		},
 		'radius': {
 			'realname': '半徑',
-			'list': ['round_bar', ]
+			'list': ['round_bar']
 		},
 		'diameter': {
 			'realname': '直徑',
-			'list': ['storage_tank_one', 'storage_tank_both']
+			'list': ['storage_tank_one', 'storage_tank_both', 'sphere']
 		},
 		'diagonal': {
 			'realname': '對角線長度',
@@ -240,6 +240,18 @@ def measure(request, shape):
 		}
 		bottom = 1 if shape.shape_name == 'storage_tank_one' else 2
 		weight = ((diameter - thickness)*thickness*height*math.pi + math.pi*pow(radius, 2)*thickness*2) * .001 * material.material_density
+
+	elif shape.shape_name == 'sphere':
+		diameter = unitconv(request.POST['diameter-unit'], float(request.POST['diameter']))
+		thickness = unitconv(request.POST['thickness-unit'], float(request.POST['thickness']))
+		radius = diameter / 2.0
+
+		spec = {
+			'直徑': diameter,
+			'厚度': thickness
+		}
+
+		weight = (4/3) * math.pi * (pow(radius, 3) - pow(radius - thickness, 3)) * material.material_density * .001
 
 	return render(request, 'measurer/result.html', {
 		'shape': shape,
